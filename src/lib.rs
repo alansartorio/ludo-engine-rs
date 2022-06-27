@@ -2,6 +2,7 @@ use board::Team;
 use enum_iterator::Sequence;
 use enum_map::{enum_map, Enum, EnumMap};
 use lazy_static::lazy_static;
+use serde::{Serialize, Deserialize};
 
 pub mod board;
 pub mod bots;
@@ -10,7 +11,7 @@ pub mod positions;
 pub mod simulator;
 pub mod utils;
 
-#[derive(Debug, Clone, Copy, Sequence, Hash, PartialEq, Eq, Enum)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Sequence, Hash, PartialEq, Eq, Enum)]
 pub enum Player {
     First = 0,
     Second,

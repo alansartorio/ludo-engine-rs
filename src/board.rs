@@ -3,6 +3,7 @@ use crate::{positions::SAFE_SPOTS, Player};
 use enum_map::{enum_map, Enum, EnumMap};
 use extend::ext;
 use std::collections::HashSet;
+use serde::{Serialize, Deserialize};
 
 use std::hash::Hasher;
 use std::{collections::HashMap, hash::Hash, ops::Index};
@@ -67,7 +68,7 @@ impl Default for Board {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq)]
 pub struct Action {
     pub player: Player,
     pub piece: u8,

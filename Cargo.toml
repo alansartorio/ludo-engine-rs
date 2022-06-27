@@ -13,3 +13,4 @@ extend = "1.1.2"
 itertools = "0.10.3"
 lazy_static = "*"
 rand = "0.8.5"
+serde = { version = "1.0.137", features = ["derive"] }
