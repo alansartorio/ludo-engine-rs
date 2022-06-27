@@ -9,7 +9,7 @@ use crate::{
 };
 use colored::{Color, Colorize};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, serde::Serialize)]
 pub struct GameState {
     pub board: Board,
     pub turn: Player,

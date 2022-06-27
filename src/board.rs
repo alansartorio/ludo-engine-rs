@@ -2,8 +2,9 @@ use crate::positions::{LAST_PLACE, POSITIONS};
 use crate::{positions::SAFE_SPOTS, Player};
 use enum_map::{enum_map, Enum, EnumMap};
 use extend::ext;
+use serde::{Deserialize, Serialize};
+use serde::ser::SerializeMap;
 use std::collections::HashSet;
-use serde::{Serialize, Deserialize};
 
 use std::hash::Hasher;
 use std::{collections::HashMap, hash::Hash, ops::Index};
@@ -37,7 +38,7 @@ pub impl PieceLocation {
     }
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, serde::Serialize)]
 pub struct PlayerData {
     pub pieces_positions: [PiecePosition; 4],
 }
@@ -53,6 +54,20 @@ impl Index<u8> for PlayerData {
 #[derive(Clone, Copy)]
 pub struct Board {
     pub players: EnumMap<Player, PlayerData>,
+}
+
+impl serde::ser::Serialize for Board {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(4))?;
+        for (player, data) in self.players {
+            map.serialize_entry(&player, &data)?;
+        }
+        map.end()
+    }
+
 }
 
 impl Default for Board {
