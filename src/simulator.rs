@@ -2,7 +2,7 @@ use crate::{
     board::{Action, Team},
     bots::Bot,
     game_state::GameState,
-    utils::{roll_dice, stats_calculator, stats_per_action, GameSimulatorIterator},
+    utils::{roll_dice, stats_calculator, stats_per_action, game_simulator_iterator},
     Player,
 };
 use enum_map::EnumMap;
@@ -31,7 +31,7 @@ pub fn simulate_to_finish(state: &mut GameState, bots: &EnumMap<Player, Bot>) ->
 }
 
 pub fn calculate_win_percentage(state: GameState, bots: EnumMap<Player, Bot>, team: Team) -> f64 {
-    let mut stats = stats_calculator(GameSimulatorIterator::new(state, team, bots));
+    let mut stats = stats_calculator(game_simulator_iterator(state, team, bots));
     stats.nth(99).unwrap().get_percent()
 }
 

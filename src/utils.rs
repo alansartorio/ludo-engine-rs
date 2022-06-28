@@ -42,33 +42,21 @@ pub enum GameResult {
     Loss,
 }
 
-pub struct GameSimulatorIterator {
-    team: Team,
+pub fn game_simulator_iterator(
     state: GameState,
+    team: Team,
     bots: EnumMap<Player, Bot>,
-}
-
-impl GameSimulatorIterator {
-    pub fn new(initial_state: GameState, team: Team, bots: EnumMap<Player, Bot>) -> Self {
-        Self {
-            state: initial_state,
-            team,
-            bots,
-        }
-    }
-}
-impl Iterator for GameSimulatorIterator {
-    type Item = GameResult;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        Some(
-            if simulate_to_finish(&mut self.state.clone(), &self.bots) == self.team {
+) -> impl Iterator<Item = GameResult> {
+    const CHUNK_SIZE: usize = 12;
+    iter::repeat_with(|| 0..CHUNK_SIZE).flat_map(move |chunk| {
+        chunk.map(move |_| {
+            if simulate_to_finish(&mut state.clone(), &bots) == team {
                 GameResult::Win
             } else {
                 GameResult::Loss
-            },
-        )
-    }
+            }
+        })
+    })
 }
 
 pub fn stats_calculator(mut iter: impl Iterator<Item = GameResult>) -> impl Iterator<Item = Stats> {
@@ -107,7 +95,7 @@ pub fn stats_per_action(
         }));
     let mut iterators = HashMap::new();
     for (action, &mut (initial_state, _stats)) in state_by_action.iter_mut() {
-        let sim = GameSimulatorIterator::new(initial_state, team, bots);
+        let sim = game_simulator_iterator(initial_state, team, bots);
         let it = stats_calculator(sim);
         iterators.insert(action.clone(), it);
     }

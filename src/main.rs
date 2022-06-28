@@ -1,6 +1,6 @@
 use enum_map::enum_map;
 use ludo_engine::{
-    board::{Board, PlayerData},
+    board::Board,
     bots::{average_bot, choose_closest_to_target},
     game_state::GameState,
     simulator::get_best_action,
