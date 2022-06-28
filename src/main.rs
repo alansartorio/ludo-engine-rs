@@ -1,6 +1,6 @@
 use enum_map::enum_map;
 use ludo_engine::{
-    board::Board,
+    board::{Board, PlayerData},
     bots::{average_bot, choose_closest_to_target},
     game_state::GameState,
     simulator::get_best_action,
@@ -10,7 +10,20 @@ use ludo_engine::{
 use rand::prelude::*;
 
 fn main() {
-    let mut state = GameState::new(Board::default(), Player::First);
+    let board = Board::default();
+    //let board = Board {
+        //players: enum_map! {
+            //Player::First => PlayerData { pieces_positions: [0, 0, 0, 6+3] },
+            //Player::Third => PlayerData { pieces_positions: [0, 0, 0, 6+3] },
+            //Player::Fourth => PlayerData { pieces_positions: [0, 0, 0, 1] },
+            //_ => PlayerData::default(),
+        //},
+    //};
+    let mut state = GameState::new(board, Player::First);
+    //println!("{}", &state);
+    //let actions = state.get_actions(1);
+
+    //dbg!(actions);
     //simulate(&mut state, Some(100));
     let mut rng = thread_rng();
 
@@ -21,13 +34,9 @@ fn main() {
         if [Player::First, Player::Second, Player::Third, Player::Fourth].contains(&state.turn) {
             let team = state.turn.team();
             state.roll(dice, |state, actions| {
-                let (best_action, win_rate) = get_best_action(
-                    state.clone(),
-                    dice,
-                    enum_map! {_ => average_bot},
-                    team,
-                )
-                .unwrap();
+                let (best_action, win_rate) =
+                    get_best_action(state.clone(), dice, enum_map! {_ => average_bot}, team)
+                        .unwrap();
                 println!("{:5.03}%", win_rate * 100.0);
                 actions
                     .iter()

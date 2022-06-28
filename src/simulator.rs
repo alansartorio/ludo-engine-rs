@@ -40,10 +40,10 @@ pub fn get_ranked_actions(
     dice: u8,
     bots: EnumMap<Player, Bot>,
     team: Team,
+    depth: usize,
 ) -> Vec<(Action, f64)> {
-    let mut stats = stats_per_action(state, dice, team, bots);
-    stats
-        .nth(99)
+    stats_per_action(state, dice, team, bots)
+        .nth(depth - 1)
         .unwrap()
         .iter()
         .map(|(&action, &stats)| (action, stats.get_percent()))
@@ -57,5 +57,5 @@ pub fn get_best_action(
     bots: EnumMap<Player, Bot>,
     team: Team,
 ) -> Option<(Action, f64)> {
-    Some(*get_ranked_actions(state, dice, bots, team).first()?)
+    Some(*get_ranked_actions(state, dice, bots, team, 100).first()?)
 }
