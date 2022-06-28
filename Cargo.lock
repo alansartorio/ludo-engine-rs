@@ -330,6 +330,7 @@ dependencies = [
  "itertools",
  "lazy_static",
  "rand",
+ "rayon",
  "serde",
 ]
 

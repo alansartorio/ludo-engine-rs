@@ -32,7 +32,7 @@ pub fn simulate_to_finish(state: &mut GameState, bots: &EnumMap<Player, Bot>) ->
 
 pub fn calculate_win_percentage(state: GameState, bots: EnumMap<Player, Bot>, team: Team) -> f64 {
     let mut stats = stats_calculator(game_simulator_iterator(state, team, bots));
-    stats.nth(99).unwrap().get_percent()
+    stats.nth(100).unwrap().get_percent()
 }
 
 pub fn get_ranked_actions(
@@ -43,7 +43,7 @@ pub fn get_ranked_actions(
     depth: usize,
 ) -> Vec<(Action, f64)> {
     stats_per_action(state, dice, team, bots)
-        .nth(depth - 1)
+        .nth(depth)
         .unwrap()
         .iter()
         .map(|(&action, &stats)| (action, stats.get_percent()))

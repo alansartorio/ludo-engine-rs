@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::iter;
+use std::sync::mpsc;
 
 use enum_map::EnumMap;
 use rand::Rng;
@@ -9,6 +10,8 @@ use crate::bots::Bot;
 use crate::game_state::GameState;
 use crate::simulator::simulate_to_finish;
 use crate::Player;
+
+use rayon::{prelude::*, current_num_threads};
 
 pub fn roll_dice(rng: &mut impl Rng) -> u8 {
     rng.gen_range(1u8..=6)
@@ -47,15 +50,20 @@ pub fn game_simulator_iterator(
     team: Team,
     bots: EnumMap<Player, Bot>,
 ) -> impl Iterator<Item = GameResult> {
-    const CHUNK_SIZE: usize = 12;
-    iter::repeat_with(|| 0..CHUNK_SIZE).flat_map(move |chunk| {
-        chunk.map(move |_| {
-            if simulate_to_finish(&mut state.clone(), &bots) == team {
-                GameResult::Win
-            } else {
-                GameResult::Loss
-            }
-        })
+    let chunk_size = current_num_threads();
+    iter::repeat_with(move || 0..chunk_size).flat_map(move |chunk| {
+        let (tx, rx) = mpsc::sync_channel(chunk_size);
+        chunk
+            .into_par_iter()
+            .map(move |_| {
+                if simulate_to_finish(&mut state.clone(), &bots) == team {
+                    GameResult::Win
+                } else {
+                    GameResult::Loss
+                }
+            })
+            .for_each(|gr| tx.send(gr).unwrap());
+        rx
     })
 }
 

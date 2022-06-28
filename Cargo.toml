@@ -17,6 +17,7 @@ extend = "1.1.2"
 itertools = "0.10.3"
 lazy_static = "*"
 rand = "0.8.5"
+rayon = "1.5.3"
 serde = { version = "1.0.137", features = ["derive"] }
 
 [dev-dependencies]

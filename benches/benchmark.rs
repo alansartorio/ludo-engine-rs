@@ -18,7 +18,7 @@ pub fn simulator_benchmark(c: &mut Criterion) {
                 1,
                 enum_map! {_ => average_bot},
                 Team::FirstThird,
-                black_box(50),
+                black_box(100),
             )
         })
     });
@@ -26,7 +26,7 @@ pub fn simulator_benchmark(c: &mut Criterion) {
 
 criterion_group! {
     name = benches;
-    config = Criterion::default().sample_size(20);
+    config = Criterion::default().sample_size(10);
     targets= simulator_benchmark
 }
 criterion_main!(benches);
