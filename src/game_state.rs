@@ -9,7 +9,7 @@ use crate::{
 };
 use colored::{Color, Colorize};
 
-#[derive(Clone, Copy, serde::Serialize)]
+#[derive(Clone, Copy, serde::Serialize, Default)]
 pub struct GameState {
     pub board: Board,
     pub turn: Player,
@@ -26,6 +26,9 @@ impl GameState {
     }
 
     pub fn get_actions(&self, dice: u8) -> HashSet<Action> {
+        if dice == 6 && self.six_rolled > 1 {
+            return HashSet::new();
+        }
         self.board.actions_for_player(dice, self.turn)
     }
 
@@ -156,5 +159,44 @@ impl Display for GameState {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use itertools::Itertools;
+
+    use super::*;
+
+    #[test]
+    fn test_six_rolls() {
+        let mut state = GameState::default();
+
+        fn roll_6(state: &mut GameState) {
+            state.roll(6, |_, actions| {
+                actions
+                    .iter()
+                    .sorted_by_key(|action| -(action.to as i8))
+                    .find_position(|action| action.player == Player::First)
+                    .unwrap()
+                    .0
+            })
+        }
+
+        assert_eq!(state.get_actions(6).len(), 2);
+        roll_6(&mut state);
+        assert_eq!(state.turn, Player::First);
+        dbg!(state.get_actions(6));
+        assert_eq!(state.get_actions(6).len(), 2);
+        roll_6(&mut state);
+        assert_eq!(state.turn, Player::First);
+        assert_eq!(state.get_actions(6).len(), 0);
+        assert_eq!(state.get_actions(5).len(), 1);
+
+        let board_before = state.board;
+        roll_6(&mut state);
+        assert_eq!(state.turn, Player::Second);
+        let board_after = state.board;
+        assert_eq!(board_before, board_after);
     }
 }

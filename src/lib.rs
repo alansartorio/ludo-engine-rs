@@ -19,6 +19,12 @@ pub enum Player {
     Fourth,
 }
 
+impl Default for Player {
+     fn default() -> Self {
+         Self::First
+     }
+}
+
 lazy_static! {
     static ref NEXT_PLAYER: EnumMap<Player, Player> = enum_map! {
         Player::First => Player::Second,

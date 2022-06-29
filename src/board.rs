@@ -38,7 +38,7 @@ pub impl PieceLocation {
     }
 }
 
-#[derive(Default, Clone, Copy, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, serde::Serialize)]
 pub struct PlayerData {
     pub pieces_positions: [PiecePosition; 4],
 }
@@ -51,7 +51,7 @@ impl Index<u8> for PlayerData {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub struct Board {
     pub players: EnumMap<Player, PlayerData>,
 }
