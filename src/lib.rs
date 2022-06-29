@@ -30,7 +30,7 @@ lazy_static! {
 
 impl Player {
     fn is_enemy_of(&self, other: Player) -> bool {
-        *self != other && *self != self.teammate()
+        *self != other && other != self.teammate()
     }
 
     fn is_friendly_to(&self, other: Player) -> bool {
