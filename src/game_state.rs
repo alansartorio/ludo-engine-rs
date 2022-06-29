@@ -37,13 +37,13 @@ impl GameState {
         dice: u8,
         action_chooser: impl FnOnce(&GameState, &Vec<Action>) -> usize,
     ) {
+        let actions = self.get_actions(dice).iter().cloned().collect_vec();
         if dice == 6 {
             self.six_rolled += 1;
         } else {
             self.six_rolled = 0;
         }
         let mut hold_turn = self.six_rolled > 0 && self.six_rolled < 3;
-        let actions = self.get_actions(dice).iter().cloned().collect_vec();
         if !actions.is_empty() {
             let i = action_chooser(self, &actions);
             let action = actions[i];
@@ -176,19 +176,30 @@ mod tests {
             state.roll(6, |_, actions| {
                 actions
                     .iter()
-                    .sorted_by_key(|action| -(action.to as i8))
-                    .find_position(|action| action.player == Player::First)
+                    .map(|action| if action.player == Player::First {action.to} else {0})
+                    .position_max()
                     .unwrap()
-                    .0
             })
         }
+
+        let get_moved_piece = |state: &GameState| {
+            *state.board.players[Player::First]
+                .pieces_positions
+                .iter()
+                .find(|&&position| position > 0)
+                .unwrap()
+        };
 
         assert_eq!(state.get_actions(6).len(), 2);
         roll_6(&mut state);
         assert_eq!(state.turn, Player::First);
+        assert_eq!(get_moved_piece(&state), 1);
         dbg!(state.get_actions(6));
+        println!("{}", state);
         assert_eq!(state.get_actions(6).len(), 2);
         roll_6(&mut state);
+        assert_eq!(get_moved_piece(&state), 7);
+        println!("{}", state);
         assert_eq!(state.turn, Player::First);
         assert_eq!(state.get_actions(6).len(), 0);
         assert_eq!(state.get_actions(5).len(), 1);
