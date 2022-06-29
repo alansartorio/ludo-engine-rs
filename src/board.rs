@@ -2,8 +2,8 @@ use crate::positions::{LAST_PLACE, POSITIONS};
 use crate::{positions::SAFE_SPOTS, Player};
 use enum_map::{enum_map, Enum, EnumMap};
 use extend::ext;
-use serde::{Deserialize, Serialize};
 use serde::ser::SerializeMap;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use std::hash::Hasher;
@@ -67,7 +67,6 @@ impl serde::ser::Serialize for Board {
         }
         map.end()
     }
-
 }
 
 impl Default for Board {
@@ -235,7 +234,10 @@ impl Board {
             if let Some((occupant_player, occupant_piece)) =
                 self.render_board().get_position(new_pos)
             {
-                if occupant_player.is_enemy_of(action.player) && !new_pos.is_safe() {
+                if occupant_player.is_enemy_of(action.player)
+                    && !new_pos.is_safe()
+                    && POSITIONS[occupant_player][1] != new_pos
+                {
                     self.players[occupant_player].pieces_positions[occupant_piece as usize] = 0;
                     another_turn = true;
                 } else {

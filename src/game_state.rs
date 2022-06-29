@@ -44,7 +44,7 @@ impl GameState {
         if !actions.is_empty() {
             let i = action_chooser(self, &actions);
             let action = actions[i];
-            hold_turn = hold_turn || self.board.apply_action(action);
+            hold_turn = self.board.apply_action(action) || hold_turn;
         }
         if !hold_turn {
             self.turn = NEXT_PLAYER[self.turn];
